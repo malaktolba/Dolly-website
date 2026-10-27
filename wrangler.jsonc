@@ -8,28 +8,28 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  // Placeholder ids below work for local development.
-  // Before the first deploy, replace them with the ids printed by the commands in README.md.
+  // Cloudflare resource ids (account 66b16f5008fc11b1a1208d52d287828a).
+  // Local development uses its own copies under .wrangler/ and never touches these.
   "d1_databases": [
     {
       // Orders, products, stock, shipping
       "binding": "DB",
       "database_name": "dolly-orders",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "125d53e6-21fd-4a15-a6ed-54af31080000",
       "migrations_dir": "migrations"
     },
     {
       // Page-cache bookkeeping for OpenNext (same database, separate table)
       "binding": "NEXT_TAG_CACHE_D1",
       "database_name": "dolly-orders",
-      "database_id": "00000000-0000-0000-0000-000000000000"
+      "database_id": "125d53e6-21fd-4a15-a6ed-54af31080000"
     }
   ],
   "kv_namespaces": [
     // Uploaded product photos
-    { "binding": "MEDIA", "id": "00000000000000000000000000000001" },
+    { "binding": "MEDIA", "id": "e93dc4ca4459435e94dd0189e6a126ac" },
     // Cached shop pages
-    { "binding": "NEXT_INC_CACHE_KV", "id": "00000000000000000000000000000002" }
+    { "binding": "NEXT_INC_CACHE_KV", "id": "ca83cd4ed31e4f7ca7c41f43bdb30a1b" }
   ],
   "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "dolly" }],
   "vars": {

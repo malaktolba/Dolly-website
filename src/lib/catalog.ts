@@ -35,7 +35,8 @@ export type Product = {
 
 export type ShippingZone = { id: number; name: string; fee: number };
 
-const img = (id: string) => `https://files.easy-orders.net/${id}`;
+// Photos live in Dolly's own storage (KV), served from /media
+const img = (file: string) => `/media/products/${file}`;
 
 export const collections: Collection[] = [
   {

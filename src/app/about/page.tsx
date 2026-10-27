@@ -5,8 +5,8 @@ import Reveal from "@/components/ui/Reveal";
 export const metadata: Metadata = { title: "About" };
 
 // Editorial photos for this page (from the Winter '25 shoot)
-const a = { name: "The Beige Set", images: ["https://files.easy-orders.net/1764598597164260579.jpeg"] };
-const b = { name: "The Funnel Suede Jacket", images: ["https://files.easy-orders.net/1764390672474292804.jpeg"] };
+const a = { name: "The Beige Set", images: ["/media/products/1764598597164260579.jpeg"] };
+const b = { name: "The Funnel Suede Jacket", images: ["/media/products/1764390672474292804.jpeg"] };
 
 // Placeholder brand copy; replace with Dolly's own story.
 export default function AboutPage() {
