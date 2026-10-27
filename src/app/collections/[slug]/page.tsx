@@ -3,7 +3,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import ShopGrid from "@/components/shop/ShopGrid";
 import Reveal from "@/components/ui/Reveal";
-import { collections, getCollection, productsIn, type CollectionSlug } from "@/lib/catalog";
+import { collections, getCollection } from "@/lib/catalog";
+import { productsIn } from "@/lib/store";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CollectionPage({ params }: Props) {
   const collection = getCollection((await params).slug);
   if (!collection) notFound();
-  const items = productsIn(collection.slug as CollectionSlug);
+  const items = await productsIn(collection.slug);
 
   return (
     <>

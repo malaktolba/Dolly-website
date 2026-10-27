@@ -50,11 +50,11 @@ export default function CartDrawer() {
               {items.map((item) => (
                 <li key={`${item.slug}-${item.size}`} className="flex gap-4 py-6">
                   <Link href={`/products/${item.slug}`} onClick={close} className="relative aspect-[3/4] w-24 shrink-0 bg-sand">
-                    <Image src={item.product.images[0]} alt={item.product.name} fill sizes="96px" className="object-cover" />
+                    {item.image && <Image src={item.image} alt={item.name} fill sizes="96px" className="object-cover" />}
                   </Link>
                   <div className="flex flex-1 flex-col">
-                    <p className="label text-cocoa-soft">{item.product.code}</p>
-                    <p className="mt-1 font-display text-lg leading-tight">{item.product.name}</p>
+                    <p className="label text-cocoa-soft">{item.code}</p>
+                    <p className="mt-1 font-display text-lg leading-tight">{item.name}</p>
                     <p className="mt-1 text-sm text-cocoa-soft">Size {item.size}</p>
                     <div className="mt-auto flex items-center justify-between pt-3">
                       <QtyStepper value={item.qty} onChange={(q) => setQty(item.slug, item.size, q)} />

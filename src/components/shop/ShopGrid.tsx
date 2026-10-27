@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ProductCard from "@/components/product/ProductCard";
 import { categories, collections, priceOf, type Product } from "@/lib/catalog";
 
@@ -9,16 +9,19 @@ type Sort = "featured" | "low" | "high";
 export default function ShopGrid({
   products,
   showCollectionFilter = true,
-  initialSale = false,
 }: {
   products: Product[];
   showCollectionFilter?: boolean;
-  initialSale?: boolean;
 }) {
   const [collection, setCollection] = useState<string>("all");
   const [category, setCategory] = useState<string>("all");
-  const [sale, setSale] = useState(initialSale);
+  const [sale, setSale] = useState(false);
   const [sort, setSort] = useState<Sort>("featured");
+
+  // The page is cached as static HTML, so read ?sale=1 in the browser
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("sale") === "1") setSale(true);
+  }, []);
 
   const available = useMemo(() => categories.filter((c) => products.some((p) => p.category === c)), [products]);
 

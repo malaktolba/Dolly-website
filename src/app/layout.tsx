@@ -6,6 +6,7 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SmoothScroll from "@/components/ui/SmoothScroll";
+import StorefrontOnly from "@/components/layout/StorefrontOnly";
 
 const bodoni = Bodoni_Moda({
   subsets: ["latin"],
@@ -21,6 +22,7 @@ const interTight = Inter_Tight({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://dolly-shop.com"),
   title: {
     default: "DOLLY — Made in Egypt",
     template: "%s — DOLLY",
@@ -34,11 +36,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className={`${bodoni.variable} ${interTight.variable}`}>
       <body>
         <CartProvider>
-          <SmoothScroll />
-          <Header />
+          <StorefrontOnly>
+            <SmoothScroll />
+            <Header />
+          </StorefrontOnly>
           <main>{children}</main>
-          <Footer />
-          <CartDrawer />
+          <StorefrontOnly>
+            <Footer />
+            <CartDrawer />
+          </StorefrontOnly>
         </CartProvider>
       </body>
     </html>

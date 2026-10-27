@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Contact" };
 
 export default function ContactPage() {
   const rows = [
-    { label: "WhatsApp", value: brand.phone, href: `https://wa.me/${brand.whatsapp}` },
+    { label: "Customer service", value: brand.phone, href: `tel:${brand.phone}` },
     { label: "Email", value: brand.email, href: `mailto:${brand.email}` },
     { label: "Instagram", value: "Follow Dolly", href: brand.instagram },
   ];
@@ -16,7 +16,7 @@ export default function ContactPage() {
         We&apos;d love to <span className="italic">hear</span> from you.
       </h1>
       <p className="mt-8 max-w-lg leading-relaxed text-cocoa-soft">
-        Questions about sizing, an order or a piece you love? The quickest way to reach us is WhatsApp.
+        Questions about sizing, an order or a piece you love? Call us or send an email and we&apos;ll get back to you.
       </p>
       <ul className="mt-16 border-t border-sand">
         {rows.map((r) => (

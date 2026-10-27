@@ -38,8 +38,8 @@ export default function Footer() {
           </div>
           <div className="flex flex-col gap-3">
             <p className="label text-cream/50">Contact</p>
-            <a href={`https://wa.me/${brand.whatsapp}`} target="_blank" rel="noreferrer" className="text-sm link-line self-start">
-              WhatsApp
+            <a href={`tel:${brand.phone}`} className="text-sm link-line self-start">
+              Call us
             </a>
             <a href={`mailto:${brand.email}`} className="text-sm link-line self-start">Email</a>
             <a href={brand.instagram} target="_blank" rel="noreferrer" className="text-sm link-line self-start">

@@ -4,20 +4,20 @@ import HeroSlider from "@/components/home/HeroSlider";
 import ProductCard from "@/components/product/ProductCard";
 import Reveal from "@/components/ui/Reveal";
 import NotifyForm from "@/components/ui/NotifyForm";
-import { collections, formatEGP, getProduct, productsIn } from "@/lib/catalog";
+import { collections, formatEGP } from "@/lib/catalog";
+import { getProducts } from "@/lib/store";
 
-export default function Home() {
-  const summer = productsIn("summer-26");
-  const spotlight = getProduct("brown-coat")!;
+export default async function Home() {
+  const all = await getProducts();
+  const summer = all.filter((p) => p.collections.includes("summer-26"));
+  // Spotlight: the brown coat if it's still listed, otherwise the first piece on sale, otherwise the first piece
+  const spotlight = all.find((p) => p.slug === "brown-coat") ?? all.find((p) => p.salePrice) ?? all[0];
+  const featureImage = summer.find((p) => p.images.length > 1)?.images[1] ?? collections[0].cover;
 
   return (
     <>
       <HeroSlider
-        slides={[
-          { image: summer[0].images[0], title: "Summer '26", href: "/collections/summer-26" },
-          { image: spotlight.images[0], title: "Winter '25", href: "/collections/winter-25" },
-          { image: collections[2].cover, title: "Ramadan Set", href: "/collections/ramadan-set" },
-        ]}
+        slides={collections.map((c) => ({ image: c.cover, title: c.name, href: `/collections/${c.slug}` }))}
       />
 
       {/* Statement */}
@@ -36,7 +36,7 @@ export default function Home() {
         <Reveal className="md:sticky md:top-[88px] md:self-start">
           <Link href="/collections/summer-26" className="group relative block aspect-[4/5] overflow-hidden bg-sand">
             <Image
-              src={summer[1].images[1]}
+              src={featureImage}
               alt="Summer '26 campaign"
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
@@ -94,10 +94,17 @@ export default function Home() {
       </section>
 
       {/* Spotlight */}
+      {spotlight && spotlight.images.length > 0 && (
       <section className="mt-32 grid items-center gap-10 px-5 md:mt-48 md:grid-cols-12 md:px-10">
         <Reveal className="md:col-span-6 md:col-start-1">
           <div className="relative aspect-[4/5] overflow-hidden bg-sand">
-            <Image src={spotlight.images[1]} alt={spotlight.name} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+            <Image
+              src={spotlight.images[1] ?? spotlight.images[0]}
+              alt={spotlight.name}
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
           </div>
         </Reveal>
         <Reveal className="md:col-span-4 md:col-start-8" delay={150}>
@@ -107,7 +114,7 @@ export default function Home() {
           <p className="mt-4 leading-relaxed text-cocoa-soft">{spotlight.style}.</p>
           <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
             <Link href={`/products/${spotlight.slug}`} className="label whitespace-nowrap bg-cocoa px-8 py-4 text-cream transition-colors hover:bg-cocoa/85">
-              Shop the coat
+              Shop now
             </Link>
             <p className="whitespace-nowrap text-sm">
               {formatEGP(spotlight.salePrice ?? spotlight.price)}
@@ -116,6 +123,7 @@ export default function Home() {
           </div>
         </Reveal>
       </section>
+      )}
 
       {/* Notify */}
       <section className="mx-auto mt-32 max-w-2xl px-6 text-center md:mt-48">

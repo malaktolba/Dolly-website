@@ -1,0 +1,4 @@
+# Password for /admin
+ADMIN_PASSWORD=choose-a-strong-password
+# Optional: Resend API key for new-order emails (leave empty to disable)
+RESEND_API_KEY=

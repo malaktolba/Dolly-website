@@ -9,7 +9,7 @@ export const policies: Policy[] = [
       "We deliver across Egypt. Orders are usually delivered within 3–7 working days, depending on your governorate.",
       "Shipping fees are calculated at checkout based on your delivery region.",
       "Payment is cash on delivery. All prices are in Egyptian pounds (EGP).",
-      "After placing an order, our team will contact you on WhatsApp to confirm the details.",
+      "After placing an order, our team will call you to confirm the details.",
     ],
   },
   {
@@ -18,7 +18,7 @@ export const policies: Policy[] = [
     body: [
       "If something isn't right, contact us within 14 days of delivery.",
       "Items must be unworn, unwashed and returned with their original tags.",
-      "Contact us on WhatsApp or by email to arrange an exchange or return.",
+      "Call us or email us to arrange an exchange or return.",
     ],
   },
   {

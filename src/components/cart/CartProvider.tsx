@@ -1,10 +1,21 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { getProduct, priceOf, type Product } from "@/lib/catalog";
+import { priceOf, type Product } from "@/lib/catalog";
 
-export type CartLine = { slug: string; size: string; qty: number };
-export type CartItem = CartLine & { product: Product; lineTotal: number };
+/** A bag line keeps a snapshot of the product for display; the server re-prices everything at checkout. */
+export type CartItem = {
+  slug: string;
+  size: string;
+  qty: number;
+  name: string;
+  code: string;
+  image: string;
+  price: number;
+  lineTotal: number;
+};
+
+type CartLine = Omit<CartItem, "lineTotal">;
 
 type CartContextValue = {
   items: CartItem[];
@@ -13,14 +24,14 @@ type CartContextValue = {
   isOpen: boolean;
   open: () => void;
   close: () => void;
-  add: (slug: string, size: string, qty?: number) => void;
+  add: (product: Product, size: string, qty?: number) => void;
   setQty: (slug: string, size: string, qty: number) => void;
   remove: (slug: string, size: string) => void;
   clear: () => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
-const STORAGE_KEY = "dolly-bag";
+const STORAGE_KEY = "dolly-bag-v2";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>([]);
@@ -42,13 +53,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, [lines, loaded]);
 
-  const add = useCallback((slug: string, size: string, qty = 1) => {
+  const add = useCallback((product: Product, size: string, qty = 1) => {
+    const max = product.stock[size] ?? 0;
     setLines((prev) => {
-      const existing = prev.find((l) => l.slug === slug && l.size === size);
+      const existing = prev.find((l) => l.slug === product.slug && l.size === size);
       if (existing) {
-        return prev.map((l) => (l === existing ? { ...l, qty: l.qty + qty } : l));
+        return prev.map((l) => (l === existing ? { ...l, qty: Math.min(l.qty + qty, max) } : l));
       }
-      return [...prev, { slug, size, qty }];
+      return [
+        ...prev,
+        {
+          slug: product.slug,
+          size,
+          qty: Math.min(qty, max),
+          name: product.name,
+          code: product.code,
+          image: product.images[0] ?? "",
+          price: priceOf(product),
+        },
+      ];
     });
     setIsOpen(true);
   }, []);
@@ -56,7 +79,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const setQty = useCallback((slug: string, size: string, qty: number) => {
     setLines((prev) =>
       prev
-        .map((l) => (l.slug === slug && l.size === size ? { ...l, qty } : l))
+        .map((l) => (l.slug === slug && l.size === size ? { ...l, qty: Math.min(qty, 10) } : l))
         .filter((l) => l.qty > 0),
     );
   }, []);
@@ -66,10 +89,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo<CartContextValue>(() => {
-    const items = lines.flatMap((l) => {
-      const product = getProduct(l.slug);
-      return product ? [{ ...l, product, lineTotal: priceOf(product) * l.qty }] : [];
-    });
+    const items = lines.map((l) => ({ ...l, lineTotal: l.price * l.qty }));
     return {
       items,
       count: items.reduce((n, i) => n + i.qty, 0),

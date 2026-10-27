@@ -5,24 +5,26 @@ import { notFound } from "next/navigation";
 import ProductActions from "@/components/product/ProductActions";
 import ProductCard from "@/components/product/ProductCard";
 import Accordion from "@/components/ui/Accordion";
-import { formatEGP, getCollection, getProduct, products } from "@/lib/catalog";
+import { formatEGP, getCollection } from "@/lib/catalog";
+import { getProductBySlug, getProducts } from "@/lib/store";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
+// Pre-render known products; products added later in the admin render on first visit
+export async function generateStaticParams() {
+  return (await getProducts()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const p = getProduct((await params).slug);
-  return p ? { title: p.name, description: p.description, openGraph: { images: [p.images[0]] } } : {};
+  const p = await getProductBySlug((await params).slug);
+  return p ? { title: p.name, description: p.description, openGraph: { images: p.images.slice(0, 1) } } : {};
 }
 
 export default async function ProductPage({ params }: Props) {
-  const product = getProduct((await params).slug);
+  const product = await getProductBySlug((await params).slug);
   if (!product) notFound();
-  const collection = getCollection(product.collections[0])!;
-  const related = products
+  const collection = getCollection(product.collections[0]);
+  const related = (await getProducts())
     .filter((p) => p.slug !== product.slug && p.collections.some((c) => product.collections.includes(c)))
     .slice(0, 4);
 
@@ -55,8 +57,12 @@ export default async function ProductPage({ params }: Props) {
           <div className="md:sticky md:top-[100px]">
             <nav className="label text-cocoa-soft">
               <Link href="/shop" className="link-line">Shop</Link>
-              <span className="mx-2">/</span>
-              <Link href={`/collections/${collection.slug}`} className="link-line">{collection.name}</Link>
+              {collection && (
+                <>
+                  <span className="mx-2">/</span>
+                  <Link href={`/collections/${collection.slug}`} className="link-line">{collection.name}</Link>
+                </>
+              )}
             </nav>
             <p className="label mt-10 text-cocoa-soft">{product.code}</p>
             <h1 className="mt-3 font-display text-4xl leading-[1.05] md:text-5xl">{product.name}</h1>
@@ -74,17 +80,31 @@ export default async function ProductPage({ params }: Props) {
             <div className="mt-10 border-t border-sand">
               <Accordion title="Details" defaultOpen>
                 <dl className="grid grid-cols-[7rem_1fr] gap-y-2">
-                  <dt className="text-cocoa-soft">Style</dt>
-                  <dd>{product.style}</dd>
-                  <dt className="text-cocoa-soft">Colour</dt>
-                  <dd>{product.color}</dd>
-                  <dt className="text-cocoa-soft">Collection</dt>
-                  <dd>{collection.name}</dd>
+                  {product.style && (
+                    <>
+                      <dt className="text-cocoa-soft">Style</dt>
+                      <dd>{product.style}</dd>
+                    </>
+                  )}
+                  {product.color && (
+                    <>
+                      <dt className="text-cocoa-soft">Colour</dt>
+                      <dd>{product.color}</dd>
+                    </>
+                  )}
+                  <dt className="text-cocoa-soft">Category</dt>
+                  <dd>{product.category}</dd>
+                  {collection && (
+                    <>
+                      <dt className="text-cocoa-soft">Collection</dt>
+                      <dd>{collection.name}</dd>
+                    </>
+                  )}
                 </dl>
               </Accordion>
               <Accordion title="Size & fit">
-                <p>Model wears size {product.modelWears}.</p>
-                <p className="mt-2">Available in {product.sizes.join(", ")}. Not sure? Message us on WhatsApp and we&apos;ll help you choose.</p>
+                {product.modelWears && <p className="mb-2">Model wears size {product.modelWears}.</p>}
+                <p>Available in {product.sizes.join(", ")}. Not sure? <Link href="/contact" className="underline">Contact us</Link> and we&apos;ll help you choose.</p>
               </Accordion>
               <Accordion title="Shipping & returns">
                 <p>Delivered across Egypt in 3–7 working days. Cash on delivery.</p>

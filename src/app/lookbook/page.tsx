@@ -2,15 +2,17 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
-import { collections, productsIn } from "@/lib/catalog";
+import { collections } from "@/lib/catalog";
+import { getProducts } from "@/lib/store";
 
 export const metadata: Metadata = { title: "Lookbook" };
 
 // Editorial layout pattern repeated per collection: wide, tall, tall, wide…
 const spans = ["md:col-span-7", "md:col-span-5 md:mt-40", "md:col-span-5", "md:col-span-6 md:col-start-7 md:-mt-24"];
 
-export default function LookbookPage() {
+export default async function LookbookPage() {
   const cover = collections[0].cover;
+  const all = await getProducts();
   return (
     <>
       <section className="relative h-[90svh] min-h-[520px] overflow-hidden bg-cocoa text-cream">
@@ -23,7 +25,7 @@ export default function LookbookPage() {
       </section>
 
       {collections.map((c) => {
-        const shots = productsIn(c.slug).flatMap((p) => p.images.slice(0, 2).map((src) => ({ src, p }))).slice(0, 4);
+        const shots = all.filter((p) => p.collections.includes(c.slug)).flatMap((p) => p.images.slice(0, 2).map((src) => ({ src, p }))).slice(0, 4);
         return (
           <section key={c.slug} className="mt-28 px-5 md:mt-44 md:px-10">
             <Reveal className="mb-12 flex items-end justify-between border-b border-sand pb-6">

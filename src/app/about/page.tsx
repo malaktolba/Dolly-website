@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
-import { getProduct } from "@/lib/catalog";
-
 export const metadata: Metadata = { title: "About" };
+
+// Editorial photos for this page (from the Winter '25 shoot)
+const a = { name: "The Beige Set", images: ["https://files.easy-orders.net/1764598597164260579.jpeg"] };
+const b = { name: "The Funnel Suede Jacket", images: ["https://files.easy-orders.net/1764390672474292804.jpeg"] };
 
 // Placeholder brand copy; replace with Dolly's own story.
 export default function AboutPage() {
-  const a = getProduct("beige-set")!;
-  const b = getProduct("funnel-suede-jacket")!;
   return (
     <>
       <section className="px-5 pt-20 md:px-10 md:pt-32">
@@ -51,7 +51,7 @@ export default function AboutPage() {
             <li>Designed in Egypt</li>
             <li>Limited seasonal drops</li>
             <li>Delivered to your door</li>
-            <li>Here for you on WhatsApp</li>
+            <li>Cash on delivery</li>
           </ul>
           <Link href="/shop" className="label mt-10 inline-block bg-cocoa px-8 py-4 text-cream hover:bg-cocoa/85">
             Shop the collections
